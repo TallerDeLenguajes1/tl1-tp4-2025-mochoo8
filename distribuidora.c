@@ -26,6 +26,14 @@ void CargarTareas(Nodo **pendientes);
 
 void InsertaTarea(Nodo **lista, Nodo *nuevoNodo);
 
+void TransferirTarea(Nodo **pendientes, Nodo **realizada);
+
+void ListarTareas(Nodo *lista);
+
+void MostrarTarea(Tarea Tarea);
+
+void BuscarTarea(Nodo *lista, int id);
+
     int main()
 {
     int opcion;
@@ -48,19 +56,35 @@ void InsertaTarea(Nodo **lista, Nodo *nuevoNodo);
         {
             
             case 1:
-
+                CargarTareas(&pendiente);
+                printf("Tareas cargadas correctamente.\n");
                 break;
             case 2:
-
+                TransferirTarea(&pendiente, &realizada);
+                printf("Tarea transferida correctamente.\n");
                 break;
             case 3:
-
+                ListarTareas(pendiente);
+                ListarTareas(realizada);
+               
                 break;
             case 4:
+                printf("Ingrese el ID de la tarea a buscar: ");
+                int id;
+                scanf("%d", &id);
+                fflush(stdin);
+                BuscarTarea(pendiente, id);
+                BuscarTarea(realizada, id);
+                printf("Tarea buscada correctamente.\n");
 
+                break;
+
+            case 5:
+                printf("Saliendo del programa...\n");
                 break;
 
             default:
+                printf("Opcion no valida. Intente de nuevo.\n");
                 break;
         }
     } while (opcion != 5);
@@ -94,6 +118,11 @@ void CargarTareas(Nodo **pendientes){
 
         fflush(stdin);
 
+        InsertaTarea(pendientes, CrearNodo(descripcion, duracion));
+        printf("Desea agregar otra tarea? (s/n): ");
+        gets(seguir);
+        
+
     }
     
 }
@@ -101,5 +130,71 @@ void CargarTareas(Nodo **pendientes){
 void InsertaTarea(Nodo **lista, Nodo *nuevoNodo){
     nuevoNodo->Siguiente = *lista;
     *lista = nuevoNodo;
+}
+
+void TransferirTarea(Nodo **pendientes, Nodo **realizada){
+    int id;
+    printf("Ingrese el ID de la tarea a transferir: ");
+    scanf("%d", &id);
+    fflush(stdin);
+    Nodo *actual = *pendientes;
+    Nodo *anterior = NULL;
+    while (actual != NULL && actual->Tarea.TareaID != id)
+    {
+        anterior = actual;
+        actual = actual->Siguiente;
+    }
+    if (actual == NULL)
+    {
+        printf("Tarea no encontrada.\n");
+        return;
+    }
+    if (anterior == NULL)
+    {
+        *pendientes = actual->Siguiente;
+    }
+    else
+    {
+        anterior->Siguiente = actual->Siguiente;
+    }
+    InsertaTarea(realizada, actual);
+    printf("Tarea transferida correctamente.\n");
+    
+}
+
+void ListarTareas(Nodo *lista){
+    Nodo *actual = lista;
+    if (actual == NULL)
+    {
+        printf("No hay tareas pendientes.\n");
+        return;
+    }
+    printf("Tareas pendientes:\n");
+    while (actual != NULL)
+    {
+        MostrarTarea(actual->Tarea);
+        actual = actual->Siguiente;
+    }
+}
+
+void MostrarTarea(Tarea Tarea){
+    printf("ID: %d\n", Tarea.TareaID);
+    printf("Descripcion: %s\n", Tarea.Descripcion);
+    printf("Duracion: %d\n", Tarea.Duracion);
+}
+
+void BuscarTarea(Nodo *lista, int id){
+    Nodo *actual = lista;
+    while (actual != NULL && actual->Tarea.TareaID != id)
+    {
+        actual = actual->Siguiente;
+    }
+    if (actual == NULL)
+    {
+        printf("Tarea no encontrada.\n");
+        return;
+    }
+    MostrarTarea(actual->Tarea);
+    printf("Tarea encontrada.\n");
     
 }
